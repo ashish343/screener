@@ -8,7 +8,7 @@ var classNames = require('classnames');
 
 function Pagination(props) {
   var page = props.page;
-  var limits = [15, 30, 50].map(function(limit, idx) {
+  var limits = [15, 30, 100].map(function(limit, idx) {
     var query = defaults({limit: limit}, props.query);
     var classes = classNames({active: page.limit == limit});
     return <li className={classes} key={idx}>
@@ -47,7 +47,7 @@ function Pagination(props) {
 }
 
 
-
+var Rows = [];
 function UserTable(props) {
   var page = props.page;
   var sortOn = function(name) {
@@ -75,22 +75,22 @@ function UserTable(props) {
   });
   Heads = <tr>{Heads}</tr>;
 
-  var Rows =  page.results.map(function(row, idx) {
+  Rows =  Rows.concat(page.results.map(function(row, idx) {
     var cname = row[1];
     var url = row[0];
     var Cells = row.slice(2).map(function(cell, iidx) {
-      return <td key={iidx}>{Utils.toLocalNumber(cell)}</td>;
+      return <td key={props.page.current*100 + iidx}>{Utils.toLocalNumber(cell)}</td>;
     });
-    return <tr key={idx}>
+    return <tr key={props.page.current*100 + idx}>
       <td className="text">{idx + page.start}.</td>
       <td className="text"><Link to={url}>{cname}</Link></td>
       {Cells}
     </tr>;
-  });
+  }));
 
-  for (var i = 12; i < Rows.length; i+=12) {
-    Rows.splice(i, 0, Heads);
-  }
+  //for (var i = 12; i < Rows.length; i+=12) {
+  //  Rows.splice(i, 0, Heads);
+  //}
 
   var pagination = props.page.total > 1 && <Pagination
     page={props.page}
